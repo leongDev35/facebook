@@ -106,7 +106,6 @@ export async function deleteUser(req, res) {
     }
 }
 
-
 //! login logout
 export async function login(req, res) {
     try {
@@ -153,6 +152,7 @@ export async function login(req, res) {
 export function logout(req, res) {
     console.log("logout");
 }
+
 
 //! password
 

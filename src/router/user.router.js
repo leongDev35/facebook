@@ -23,15 +23,9 @@ userRouter.post('/sentNewPassword', sentNewPassword);
 
 userRouter.get('/confirmEmail/:token', confirmEmail)
 
-userRouter.get('/test', function(req, res) {
-    console.log("test");
-})
 
 //! search
 userRouter.get('/search', search);
-
-
-
 
 
 

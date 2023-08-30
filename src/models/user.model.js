@@ -12,7 +12,13 @@ const userSchema = new Schema({
     bio: { type: String, default: '' },
     email: String,
     authEmail: { type: Boolean, default: false },
-    tokenAuthEmail: { type: String, default: '' }
+    tokenAuthEmail: { type: String, default: '' },
+    posts: [{
+        postId: {
+            type: Schema.Types.ObjectId,
+            ref: "post",
+        }
+    }]
 });
 const User = model('user', userSchema);
 
