@@ -4,7 +4,7 @@ const GOOGLE_MAILER_CLIENT_ID =
   '991351297491-nvc4frjhcq7873thseuk7b2lpr0fnh79.apps.googleusercontent.com';
 const GOOGLE_MAILER_CLIENT_SECRET = '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';
 const GOOGLE_MAILER_REFRESH_TOKEN =
-  '1//045hEYqaVuK8JCgYIARAAGAQSNwF-L9Irm6CGHsqaHOMT40iJ9wr2Q5lTlZFPPxNv_ipYKlD8jx1dbkUdQXvzGaP7mJw2HdpAEZI';
+  '1//0483hlDdWmWIdCgYIARAAGAQSNwF-L9Irceh2PlLb8YqNU-N6goxAIaSg8OAnYR-qZaZlx94Dz4QYOxuWFw1ma7Z34zql2sf32eY';
 const ADMIN_EMAIL_ADDRESS = 'mach0jc0d0n14@gmail.com';
 
 // Khởi tạo OAuth2Client với Client ID và Client Secret

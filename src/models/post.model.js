@@ -2,9 +2,13 @@ import { Schema, model } from 'mongoose';
 
 const postSchema = new Schema({
     content: String,
-    owner: {
+    ownerPost: {
         type: Schema.Types.ObjectId,
         ref: "user",
+    },
+    pageId: {
+        type: Schema.Types.ObjectId,
+        ref: "page",
     },
     like: [{
         idUser: {
@@ -52,5 +56,4 @@ const postSchema = new Schema({
     status: { type: String, default: "public" }
 });
 const Post = model('post', postSchema);
-
 export default Post;

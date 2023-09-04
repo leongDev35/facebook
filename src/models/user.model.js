@@ -13,7 +13,24 @@ const userSchema = new Schema({
     email: String,
     authEmail: { type: Boolean, default: false },
     tokenAuthEmail: { type: String, default: '' },
-    posts: [{
+    postInProfile: [{
+        postId: {
+            type: Schema.Types.ObjectId,
+            ref: "post",
+        }
+    }],
+    postsInPage: [{
+        pageId: {
+            type: Schema.Types.ObjectId,
+            ref: "page",
+        },
+        postId: {
+            type: Schema.Types.ObjectId,
+            ref: "post",
+        }
+        
+    }], 
+    postsShareByUser : [{
         postId: {
             type: Schema.Types.ObjectId,
             ref: "post",
