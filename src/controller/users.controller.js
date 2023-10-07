@@ -112,7 +112,7 @@ export async function login(req, res) {
       const user = await User.findOne({ userName: req.body.userName });
       if (!user) {
         return res.json({
-          message: `Không tồn tại người dùng với username: ${req.body.userName}`
+          message: `User ${req.body.userName} is not exist`
         });
       } else {
         const hashedPassword = await bcrypt.compare(
@@ -135,17 +135,17 @@ export async function login(req, res) {
           return res.json({
             accessToken,
             userData,
-            success: 'Đăng nhập thành công!'
+            success: 'Login successful'
           });
         } else {
           return res.json({
-            message: 'Nhập khẩu vừa nhập vào không chính xác'
+            message: 'Password is wrong'
           });
         }
       }
     } catch (err) {
       console.log(err);
-      return res.json({ message: 'Có lỗi xảy ra, vui lòng thử lại!' });
+      return res.json({ message: 'Something error' });
     }
   }
 
@@ -267,6 +267,34 @@ export function search(req, res) {
     console.log("search");
 }
 
+
+//! SOCKET
+  //! hàm sử lý socketID
+  export async function saveSocketIdToUser(userId,socketId) {
+    try {
+    await User.updateOne(
+      { _id: userId },
+      {
+        $set: {socketId: socketId
+        }
+      }
+    );
+    
+  } catch (err) {
+  }
+  }
+  export async function resetSocketIdToUser(userId) {
+    try {
+    await User.updateOne(
+      { _id: userId },
+      {
+        $set: {socketId: ''
+        }
+      }
+    );
+    
+  } catch (err) {
+  }}
 
 
 

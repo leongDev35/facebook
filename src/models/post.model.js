@@ -17,30 +17,10 @@ const postSchema = new Schema({
         }
     }],
     comment: [{
-        contentComment: String,
-        idUserComment: {
+        idComment: {
             type: Schema.Types.ObjectId,
-            ref: "user",
-        },
-        likeComment: [{
-            idUser: {
-                type: Schema.Types.ObjectId,
-                ref: "user",
-            }
-        }],
-        reply: [{
-            contentReply: String,
-            idUserReply: {
-                type: Schema.Types.ObjectId,
-                ref: "user",
-            },
-            likeReply: [{
-                idUser: {
-                    type: Schema.Types.ObjectId,
-                    ref: "user",
-                }
-            }]
-        }]
+            ref: "comment",
+        }
     }],
     share: [{
         idUser: {

@@ -1,5 +1,6 @@
 import express from "express";
 import { getUsers, createUser, getUser, updateUser, deleteUser, login, logout, updatePassword, sentNewPassword, confirmEmail, search } from "../controller/users.controller.js";
+import { createChatWithFriend, getChatWithFriend, getListFriendChat } from "../controller/chat.controller.js";
 
 const userRouter = express.Router();
 
@@ -27,6 +28,9 @@ userRouter.get('/confirmEmail/:token', confirmEmail)
 //! search
 userRouter.get('/search', search);
 
-
+//! chat
+userRouter.post('/chat', createChatWithFriend);
+userRouter.get('/chat', getChatWithFriend);
+userRouter.get('/chat/listFriend', getListFriendChat)
 
 export default userRouter;

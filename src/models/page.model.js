@@ -6,7 +6,7 @@ const pageSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "user"
     },
-    postInPage: [{
+    postsInPage: [{
         postId: {
             type: Schema.Types.ObjectId,
             ref: "post",

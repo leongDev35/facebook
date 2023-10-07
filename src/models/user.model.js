@@ -28,14 +28,36 @@ const userSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: "post",
         }
-        
-    }], 
-    postsShareByUser : [{
+
+    }],
+    postsShareByUser: [{
         postId: {
             type: Schema.Types.ObjectId,
             ref: "post",
         }
-    }]
+    }],
+    chatWithFriend: [
+        {
+            partner: {
+                type: Schema.Types.ObjectId,
+                ref: "user",
+            },
+            message: [
+                {
+                    idMessage: {
+                        type: Schema.Types.ObjectId,
+                        ref: "message"
+                    }
+                }
+            ],
+            lastMessage: {
+                type: Schema.Types.ObjectId,
+                ref: "message"
+            },
+            
+        }
+    ],
+    socketId: String
 });
 const User = model('user', userSchema);
 
