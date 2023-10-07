@@ -28,7 +28,7 @@ router(app)
 //! socket.io
 export const io = new Server(httpServer, { 
     cors: {
-        origin: `https://leong-facebook-fe.onrender.com/`
+        origin: '*'
       }
 });
 
