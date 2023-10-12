@@ -1,6 +1,8 @@
 import express from "express";
 import { getUsers, createUser, getUser, updateUser, deleteUser, login, logout, updatePassword, sentNewPassword, confirmEmail, search } from "../controller/users.controller.js";
 import { createChatWithFriend, getChatWithFriend, getListFriendChat } from "../controller/chat.controller.js";
+import { checkStranger, deleteFriend, getFriend, getStranger, responseFriendRequest, sendFriendRequest } from "../controller/friend.controller.js";
+import { createNotif, getNotifs } from "../controller/socketController/notif.socket.controller.js";
 
 const userRouter = express.Router();
 
@@ -32,5 +34,18 @@ userRouter.get('/search', search);
 userRouter.post('/chat', createChatWithFriend);
 userRouter.get('/chat', getChatWithFriend);
 userRouter.get('/chat/listFriend', getListFriendChat)
+
+
+//! Friends
+userRouter.post('/friend/request', sendFriendRequest)
+userRouter.post('/friend/accept', responseFriendRequest)
+userRouter.delete('/friend/delete', deleteFriend)
+userRouter.get('/friend', getFriend)
+userRouter.get('/stranger', getStranger)
+userRouter.get('/checkStranger', checkStranger)
+
+//! notif
+userRouter.post('/notif', createNotif)
+userRouter.get('/notif', getNotifs)
 
 export default userRouter;

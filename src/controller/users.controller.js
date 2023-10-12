@@ -63,7 +63,7 @@ export async function getUser(req, res) {
     try {
       const user = await User.findById({
         _id: userId
-      });
+      },['_id','fullName','avatarUrl','listFriends']);
       console.log(user);
       res.json({
         message: 'User info',
@@ -272,6 +272,7 @@ export function search(req, res) {
   //! hàm sử lý socketID
   export async function saveSocketIdToUser(userId,socketId) {
     try {
+      console.log(userId, "socketId" + socketId);
     await User.updateOne(
       { _id: userId },
       {

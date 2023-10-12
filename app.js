@@ -9,6 +9,8 @@ import { createServer } from "http";
 import { postEventHandle } from "./src/socket/post.socket.js";
 import { messageEventHandle } from "./src/socket/message.socket.js";
 import { resetSocketIdToUser, saveSocketIdToUser } from "./src/controller/users.controller.js";
+import { notifEventHangle } from "./src/socket/notif.socket.js";
+import { friendHandleSocket } from "./src/socket/friend.socket.js";
 
 //! connect db
 const db = new ConnectDB();
@@ -34,17 +36,20 @@ export const io = new Server(httpServer, {
 
 io.on('connection', async (socket) => {
     //! lưu socket.id vào trong db 
-    
     await saveSocketIdToUser(socket.handshake.auth.userId, socket.id)
     console.log('A user connected',socket.id);
     io.emit('friendConnected',socket.handshake.auth.userId,socket.id)
     postEventHandle(socket)
     messageEventHandle(socket)
+    notifEventHangle(socket)
+    friendHandleSocket(socket)
+    //! disconnect
     socket.on('disconnect', (reason) => {
       io.emit('friendConnected',socket.handshake.auth.userId,'')
       resetSocketIdToUser(socket.handshake.auth.userId)
       //! xóa socket.id trong db
       console.log('A user disconnected', reason);
+      
     });
   });
 httpServer.listen(port, () => {

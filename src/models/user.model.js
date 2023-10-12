@@ -54,10 +54,50 @@ const userSchema = new Schema({
                 type: Schema.Types.ObjectId,
                 ref: "message"
             },
-            
+
         }
     ],
-    socketId: String
+    socketId: String,
+    //! Friend
+    listFriends: [{
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: "user",
+        }
+    }],
+    listFollowsMe: [{
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: "user",
+        }
+    }],
+    listMeFollows: [{
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: "user",
+        }
+    }],
+    listSentFriendRequests: [{
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: "user",
+        }
+    }],
+    listFriendsSentRequest: [{
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: "user",
+        }
+    }],
+//! Notif
+notifInUser: [{
+    notifId: {
+        type: Schema.Types.ObjectId,
+        ref: "notif"
+    }
+}]
+
+
 });
 const User = model('user', userSchema);
 

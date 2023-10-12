@@ -1,10 +1,12 @@
 import express from "express";
-import { createPost, deletePost, getPosts, likePost, updatePost ,commentPost, deleteCommentPost, getComments} from "../controller/posts.controller.js";
+import { createPost, deletePost, getPosts, likePost, updatePost ,commentPost, deleteCommentPost, getComments, getPost} from "../controller/posts.controller.js";
 
 const postRouter = express.Router();
 
 //! CRUD
 postRouter.post('', createPost)
+postRouter.get('/info', getPost)
+
 postRouter.get('', getPosts)
 postRouter.put('/info/:postId', updatePost)
 postRouter.delete('/info/', deletePost)

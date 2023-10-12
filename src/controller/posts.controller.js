@@ -82,7 +82,22 @@ export async function createPost(req, res) {
     console.log(error);
   }
 }
+export async function getPost(req, res) {
+  //! chưa xử lý trang chủ
+  try {
+    const postId = req.query.postId; 
+        const post = await Post.findById(postId).populate({ //! chọn trường để lấy
+          path: 'ownerPost',
+          select: 'avatarUrl fullName',
+        });
+        
+    res.json({ post }); 
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Error fetching posts' });
+  }
 
+}
 export async function getPosts(req, res) {
   //! chưa xử lý trang chủ
   try {
@@ -96,29 +111,21 @@ export async function getPosts(req, res) {
 
       //! trả về các bài post có thời gian trước after, bài cũ hơn
       //! query là một đối tượng truy vấn đến DB
-      if (userId) { //! trang của từng user
-        console.log(userId);
+      if (pageId == userId && userId) { //! trang của từng user
+        
 
         const postInUser = (await User.findById(userId)).postInProfile;
-        console.log(postInUser);
         const IdsPostInUser = postInUser.map(obj => obj.postId); //! Lấy post của User
         query = {
           date: { $lt: new Date(after) },
           _id: { $in: IdsPostInUser }
         };
-        if (pageId) { //! các page có id page riêng
-          const postsInPage = (await Page.findById(pageId)).postsInPage;
-          const idsPostsInPage = postsInPage.map(obj => obj.postId); //! Lấy post của User
-          console.log(idsPostsInPage);
-          query = {
-            date: { $lt: new Date(after) },
-            _id: { $in: idsPostsInPage }
-          };
-        } else { //! trang chủ 
-          // query = { date: { $lt: new Date(after) } }; //! tìm date giá trị nhỏ hơn after. Tức các bài viết cũ hơn giá trị after
-
-        }
-      } else { //! lấy toàn bộ post không lọc gì cả
+        
+      } else if (pageId != userId) { //! trang của page id
+        query = {
+          date: { $lt: new Date(after) }
+        };
+      } else if (!pageId) { //! trang chủ
         query = {
           date: { $lt: new Date(after) }
         };
@@ -126,7 +133,12 @@ export async function getPosts(req, res) {
 
     } else {
       //! xử lý trường hợp chưa có after. Lần đầu tiên gọi hàm getPosts
-      if (userId) { //! trang của từng user, chưa làm trang newfeed
+      if (!pageId) {
+        //! trang chủ
+        
+
+
+      } else if (pageId == userId) { //! trang của từng user, chưa làm trang newfeed
         //! tìm được after của bài viết mới nhất của user
 
         const postInUser = (await User.findById(userId)).postInProfile;
@@ -135,16 +147,14 @@ export async function getPosts(req, res) {
         query = {
           _id: { $in: IdsPostInUser }
         };
-        if (pageId) { //! các page có id page riêng
-          const postsInPage = (await Page.findById(pageId)).postsInPage;
-          const idsPostsInPage = postsInPage.map(obj => obj.postId); //! Lấy post của User
-          query = {
-            _id: { $in: idsPostsInPage }
-          };
-        } else { //! trang chủ chưa làm
-          // query = {};
-        }
+      } else if (pageId != userId) { //! các page có id page riêng
+        const postsInPage = (await Page.findById(pageId)).postsInPage;
+        const idsPostsInPage = postsInPage.map(obj => obj.postId); //! Lấy post của User
+        query = {
+          _id: { $in: idsPostsInPage }
+        };
       }
+
     }
 
     const limit = 6;
@@ -317,8 +327,8 @@ export async function likePostSocket(p, u) {
           path: 'ownerPost',
           select: 'avatarUrl fullName',
         });
-        return data
-      } else {
+        return {data: data, type: 'unlike'}
+      } else { //! trường hợp thêm like vào bài post
         await Post.updateOne(
           { _id: postId },
           { $push: { like: { idUser: userId } } }
@@ -328,7 +338,9 @@ export async function likePostSocket(p, u) {
           path: 'ownerPost',
           select: 'avatarUrl fullName',
         });
-        return data
+
+
+        return {data: data, type: 'like'}
       }
     } else {
       if (!post) {
@@ -346,7 +358,7 @@ export async function likePostSocket(p, u) {
 }
 
 //! Comment- DOING
-  //! tạo một comment cho Post
+//! tạo một comment cho Post
 export async function commentPost(req, res) {
   try {
     const contentComment = req.body.comment;
@@ -374,18 +386,18 @@ export async function commentPost(req, res) {
         select: 'avatarUrl fullName',
       })
       const commentsInPost = data.comment;
-          console.log(commentsInPost);
-          const IdsCommentsInPost = commentsInPost.map(obj => obj.idComment); //! Lấy comment của post
-          query = {
-            _id: { $in: IdsCommentsInPost }
-          };
-          const limit = 3;
+      console.log(commentsInPost);
+      const IdsCommentsInPost = commentsInPost.map(obj => obj.idComment); //! Lấy comment của post
+      query = {
+        _id: { $in: IdsCommentsInPost }
+      };
+      const limit = 3;
       const comments = await Comment.find(query).limit(limit).sort({ date: -1 }).populate({ //! chọn trường để lấy
         path: 'idUserComment',
         select: 'avatarUrl fullName',
       }); //! sort theo bài viết mới nhất
-     return res.json({ comments }); 
-    
+      return res.json({ comments });
+
       // .populate(
       //   {
       //     path: 'comment.idComment',
@@ -414,7 +426,7 @@ export async function commentPost(req, res) {
     return res.json({ message: 'Có lỗi xảy ra, vui lòng thử lại!' });
   }
 }
-export async function commentPostSocket(p, u,comment) {
+export async function commentPostSocket(p, u, comment) {
   try {
     const contentComment = comment;
     const postId = p;
@@ -441,17 +453,17 @@ export async function commentPostSocket(p, u,comment) {
         select: 'avatarUrl fullName',
       })
       const commentsInPost = data.comment;
-          const IdsCommentsInPost = commentsInPost.map(obj => obj.idComment); //! Lấy comment của post
-          query = {
-            _id: { $in: IdsCommentsInPost }
-          };
-          const limit = 3;
+      const IdsCommentsInPost = commentsInPost.map(obj => obj.idComment); //! Lấy comment của post
+      query = {
+        _id: { $in: IdsCommentsInPost }
+      };
+      const limit = 3;
       const comments = await Comment.find(query).limit(limit).sort({ date: -1 }).populate({ //! chọn trường để lấy
         path: 'idUserComment',
         select: 'avatarUrl fullName',
       }); //! sort theo bài viết mới nhất
-     return  comments ; 
-    
+      return {comments: comments, data: data};
+
 
     } else {
       if (!post) {
@@ -467,7 +479,7 @@ export async function commentPostSocket(p, u,comment) {
   }
 }
 
-  //! xóa 1 comment trong Post
+//! xóa 1 comment trong Post
 export async function deleteCommentPost(req, res) {
   try {
     const commentId = req.query.c;
@@ -490,7 +502,7 @@ export async function deleteCommentPost(req, res) {
           }
         }
       );
-      await Comment.deleteOne({ _id: commentId}); 
+      await Comment.deleteOne({ _id: commentId });
       return res.json({ message: 'Delete complete' });
     }
 
@@ -499,47 +511,47 @@ export async function deleteCommentPost(req, res) {
     return res.json({ message: 'Có lỗi xảy ra, vui lòng thử lại!' });
   }
 }
-  //! lấy comment từ một post
-  export async function getComments(req, res) {
-    //! chưa xử lý trang chủ
-    try {
-      const after = req.query.after; // Giá trị con trỏ
-      const postId = req.query.postId;
-      let query = {};
-  
-      if (after) {
-  
-        //! trả về các bài post có thời gian trước after, bài cũ hơn
-        //! query là một đối tượng truy vấn đến DB
-      
-          const commentsInPost = (await Post.findById(postId)).comment;
-          console.log(commentsInPost);
-          const IdsCommentsInPost = commentsInPost.map(obj => obj.idComment); //! Lấy comment của post
-          query = {
-            date: { $lt: new Date(after) },
-            _id: { $in: IdsCommentsInPost }
-          };
-      } else {
-        //! xử lý trường hợp chưa có after. Lần đầu tiên gọi hàm getComments
-        
-        const commentsInPost = (await Post.findById(postId)).comment;
-        const IdsCommentsInPost = commentsInPost.map(obj => obj.idComment);
-  
-          query = {
-            _id: { $in: IdsCommentsInPost }
-          };
-        
-      }
-  
-      const limit = 3;
-      const comments = await Comment.find(query).limit(limit).sort({ date: -1 }).populate({ //! chọn trường để lấy
-        path: 'idUserComment',
-        select: 'avatarUrl fullName',
-      }); //! sort theo bài viết mới nhất
-      res.json({ comments, endCursor: comments.length > 0 ? comments[comments.length - 1].date : null }); //! lưu giá trị endCursor để sử lý bên FE
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: 'Error fetching Comments' });
+//! lấy comment từ một post
+export async function getComments(req, res) {
+  //! chưa xử lý trang chủ
+  try {
+    const after = req.query.after; // Giá trị con trỏ
+    const postId = req.query.postId;
+    let query = {};
+
+    if (after) {
+
+      //! trả về các bài post có thời gian trước after, bài cũ hơn
+      //! query là một đối tượng truy vấn đến DB
+
+      const commentsInPost = (await Post.findById(postId)).comment;
+      console.log(commentsInPost);
+      const IdsCommentsInPost = commentsInPost.map(obj => obj.idComment); //! Lấy comment của post
+      query = {
+        date: { $lt: new Date(after) },
+        _id: { $in: IdsCommentsInPost }
+      };
+    } else {
+      //! xử lý trường hợp chưa có after. Lần đầu tiên gọi hàm getComments
+
+      const commentsInPost = (await Post.findById(postId)).comment;
+      const IdsCommentsInPost = commentsInPost.map(obj => obj.idComment);
+
+      query = {
+        _id: { $in: IdsCommentsInPost }
+      };
+
     }
-  
+
+    const limit = 3;
+    const comments = await Comment.find(query).limit(limit).sort({ date: -1 }).populate({ //! chọn trường để lấy
+      path: 'idUserComment',
+      select: 'avatarUrl fullName',
+    }); //! sort theo bài viết mới nhất
+    res.json({ comments, endCursor: comments.length > 0 ? comments[comments.length - 1].date : null }); //! lưu giá trị endCursor để sử lý bên FE
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Error fetching Comments' });
   }
+
+}

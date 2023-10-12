@@ -36,6 +36,14 @@ export function messageEventHandle(socket) {
 
     });
 
+    socket.on("scrollToLoadMessage", async (userId,partnerId,after,socketId) => {
+      const moreMessage = await getChatWithFriendSocket(userId, partnerId, after)
+        moreMessage.messages.reverse()
+
+        console.log(moreMessage.messages,44);
+        io.to(socketId).emit('scrollToLoadMessage', moreMessage);
+    })
+
     socket.on('clickTab', async (userId,partnerId,socketId)=>{
        
         // let lastMessageId = '';
