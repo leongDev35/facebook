@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, createUser, getUser, updateUser, deleteUser, login, logout, updatePassword, sentNewPassword, confirmEmail, search } from "../controller/users.controller.js";
+import { getUsers, createUser, getUser, updateUser, deleteUser, login, logout, updatePassword, sentNewPassword, confirmEmail, search, searchUsersByKeyword } from "../controller/users.controller.js";
 import { createChatWithFriend, getChatWithFriend, getListFriendChat } from "../controller/chat.controller.js";
 import { checkStranger, deleteFriend, getFriend, getStranger, responseFriendRequest, sendFriendRequest } from "../controller/friend.controller.js";
 import { createNotif, getNotifs } from "../controller/socketController/notif.socket.controller.js";
@@ -29,6 +29,7 @@ userRouter.get('/confirmEmail/:token', confirmEmail)
 
 //! search
 userRouter.get('/search', search);
+userRouter.get('/searchByKeyword', searchUsersByKeyword);
 
 //! chat
 userRouter.post('/chat', createChatWithFriend);

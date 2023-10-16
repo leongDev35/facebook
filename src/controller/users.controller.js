@@ -106,6 +106,28 @@ export async function deleteUser(req, res) {
     }
 }
 
+export async function searchUsersByKeyword(req, res) {
+  const keyword = req.query.keyword;
+  
+  
+  try {
+    // Sử dụng $regex để tìm kiếm tương đối
+    const users = await User.find({
+      fullName: {
+        $regex: keyword, // Sử dụng keyword như biểu thức chính quy
+        $options: 'i', // Tùy chọn 'i' để không phân biệt hoa thường
+      },
+    }, ['_id', 'fullName', 'avatarUrl']);
+
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Lỗi trong quá trình tìm kiếm người dùng.' });
+  }
+
+
+
+}
+
 //! login logout
 export async function login(req, res) {
     try {

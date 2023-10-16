@@ -6,13 +6,14 @@ import User from "../models/user.model.js";
 
 
 export function messageEventHandle(socket) {
-    socket.on('message', async (user,partner,message,socketId) => {
+    socket.on('message', async (user,partner,message,socketId, messageImage) => {
         
         //! cần biết được socketId của partner
         const partnerFind = await User.findOne({ _id: partner._id })
         const sender = {_id: user._id, fullName: user.fullName, avatarUrl: user.avatarUrl}
         const messageDB = new Message({
             content: message,
+            contentUrlImage: messageImage,
             senderId: user._id,
             receiverId: partner._id
         })
@@ -20,6 +21,7 @@ export function messageEventHandle(socket) {
         const messageSocket = {
             _id: messageDB._id,
             content: message,
+            contentUrlImage: messageImage,
             senderId: sender,
             receiverId: partner,
             isSeen: false,
