@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 
 const postSchema = new Schema({
     content: String,
+    contentImage: String,
     ownerPost: {
         type: Schema.Types.ObjectId,
         ref: "user",

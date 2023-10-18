@@ -22,6 +22,7 @@ export async function createPost(req, res) {
         //! tạo post trong page. 
         const post = new Post({
           content: req.body.content,
+          contentImage: req.body.contentImage,
           ownerPost: ownerId,
           pageId: pageId
         });
@@ -60,6 +61,7 @@ export async function createPost(req, res) {
 
       const post = new Post({
         content: req.body.content,
+        contentImage: req.body.contentImage,
         ownerPost: ownerId
       });
       await post.save();

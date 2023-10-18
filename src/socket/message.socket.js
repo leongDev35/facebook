@@ -39,10 +39,11 @@ export function messageEventHandle(socket) {
     });
 
     socket.on("scrollToLoadMessage", async (userId,partnerId,after,socketId) => {
+      console.log(after,35);
       const moreMessage = await getChatWithFriendSocket(userId, partnerId, after)
         moreMessage.messages.reverse()
 
-        console.log(moreMessage.messages,44);
+        // console.log(moreMessage.messages,44);
         io.to(socketId).emit('scrollToLoadMessage', moreMessage);
     })
 

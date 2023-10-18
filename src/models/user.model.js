@@ -4,6 +4,8 @@ const userSchema = new Schema({
     userName: String,
     fullName: String,
     password: String,
+    birthday: String,
+    phoneNumber: String,
     avatarUrl: {
         type: String,
         default:
